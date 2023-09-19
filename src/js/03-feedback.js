@@ -4,7 +4,7 @@ const form = document.querySelector('.feedback-form');
 form.addEventListener('input', throttle(onFormData, 500));
 form.addEventListener('submit', onSubmitForm);
 
-const formData = {};
+const formData = JSON.parse(localStorage.getItem('feedback-form-state')) || {}; //Решил инициализировать formData таким образом, чтобы не происходила перехапись. Логика: Парсит значение из localStorage, а если его нет то просто {}.
 
 function onFormData(event) {
   formData[event.target.name] = event.target.value;
@@ -18,12 +18,13 @@ function onSubmitForm(event) {
   localStorage.removeItem('feedback-form-state');
 }
 
-(function dataFromLocalStorage() {
+function dataFromLocalStorage() {
   const data = JSON.parse(localStorage.getItem('feedback-form-state'));
   const email = document.querySelector('.feedback-form input');
   const message = document.querySelector('.feedback-form textarea');
-  if (data) {
-    email.value = data.email;
-    message.value = data.message;
-  }
-})();
+
+  email.value = data.email || ''; // Добавил проверку чтобы не было undefined
+  message.value = data.message || ''; // Добавил проверку чтобы не было undefined
+}
+
+dataFromLocalStorage();
